@@ -3,54 +3,25 @@
 <?php
 session_start();
 
-// Database configuration
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "your_database_name";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Prepare and bind
-    $stmt = $conn->prepare("SELECT id, password, is_admin FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
+    // Static admin credentials for testing purposes
+    $static_email = "admin@gmail.com";
+    $static_password = "admin";
 
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($user_id, $hashed_password, $is_admin);
-        $stmt->fetch();
-
-        if ($is_admin && password_verify($password, $hashed_password)) {
-            // Password is correct and user is an admin, start a session
-            $_SESSION['admin_id'] = $user_id;
-            header("Location: admin_dashboard.php");
-        } else {
-            // Password is incorrect or user is not an admin
-            echo "Invalid email, password or you do not have admin privileges";
-        }
+    if ($email == $static_email && $password == $static_password) {
+        // Static password is correct, start a session
+        $_SESSION['admin_id'] = 1; // You can use any arbitrary ID for the admin
+        header("Location:dashboard.php");
+        exit;
     } else {
-        // No user found with that email
+        // Invalid credentials
         echo "Invalid email or password";
     }
-
-    $stmt->close();
 }
-
-$conn->close();
 ?>
-
-
 
 
 
